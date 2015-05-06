@@ -11,5 +11,8 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "devDependencies": {
+    "jquery-ui": "~1.11.4"
+  }
 }

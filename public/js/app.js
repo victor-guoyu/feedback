@@ -1,3 +1,10 @@
+$('#feedback').accordion('option',{
+    event: "click",
+    collapsible: true,
+    active: false,
+    autoHeight: false
+});
+
 UserVoice = window.UserVoice || [];
 
 /**
@@ -35,7 +42,7 @@ UserVoice.push([
 
 UserVoice.push(['addTrigger']);
 UserVoice.push(['show']);
-		
+
 UserVoice.push(['embed', '#SmartVoteEmbedWidget', {
   mode: 'smartvote',
   forum_id: '289798',
