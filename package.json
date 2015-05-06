@@ -8,7 +8,7 @@
     "start": "node server.js"
   },
   "author": "Yu Guo",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "express": "^4.12.3"
   }

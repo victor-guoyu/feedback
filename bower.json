@@ -1,0 +1,15 @@
+{
+  "name": "user-voice",
+  "version": "1.0.0",
+  "authors": [
+    "Yu Guo"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
