@@ -3,10 +3,10 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Feedback</title>
-  <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.css">
-  <script src="bower_components/jquery/dist/jquery.js"></script>
-  <script src="bower_components/jquery-ui/jquery-ui.js"></script>
-  <script src="//widget.uservoice.com/sUmr3y8NMT63V1h8DHTJxw.js" async></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="http://widget.uservoice.com/sUmr3y8NMT63V1h8DHTJxw.js" async></script>
 </head>
 <body>
   <div id="feedback">
@@ -29,6 +29,9 @@
       active: false,
       heightStyle: "content"
     });
+    $('#feedback').on('click',function() {
+      $('body > article > div > section > form > div.pane-body > div > div > div:nth-child(1)').removeAttr('style');
+    })
   </script>
 </body>
 </html>

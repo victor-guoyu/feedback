@@ -3,54 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Dashboard</title>
-  <style type="text/css">
-    html,body {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      margin:0;
-      padding:0;
-      width:100%;
-      height:100%;
-    }
-
-    text {
-      font: 10px sans-serif;
-    }
-
-
-    .arc path {
-      stroke: #fff;
-      stroke-width:3px;
-    }
-    .passed {
-      opacity: 0.3;
-      border:1px solid #aaa;
-    }
-
-    .chart-container {
-      width:70%;
-      height:70%;
-      border: 1px dotted silver;
-    }
-
-    svg text{
-    font-size: 1em;
-    font-family: sans-serif;
-    }
-
+   <style>
     .tooltip{
-        position: absolute;
-        display: none;
-        width: auto;
-        height: auto;
-        background: none repeat scroll 0 0 white;
-        border: 0 none;
-        border-radius: 8px 8px 8px 8px;
-        box-shadow: -3px 3px 15px #888888;
-        color: black;
-        font: 12px sans-serif;
-        padding: 5px;
-        text-align: center;
-
+      position: absolute;
+      display: none;
+      width: auto;
+      height: auto;
+      background: none repeat scroll 0 0 white;
+      border: 0 none;
+      border-radius: 8px 8px 8px 8px;
+      box-shadow: -3px 3px 15px #888888;
+      color: black;
+      font: 12px sans-serif;
+      padding: 5px;
+      text-align: center;
     }
 
     path:hover{
@@ -59,12 +25,12 @@
   </style>
 </head>
 <body>
-<div class="chart-container"></div>
-<div class='tooltip'>
+  <div id="container"></div>
+  <div class="tooltip">
     <span></span>
-</div>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.10/d3.min.js"></script>
-  <script src="app.js"></script>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></Script>
+  <script src = "http://d3js.org/d3.v3.min.js"></script>
+  <script src = "app.js"></script>
 </body>
 </html>
