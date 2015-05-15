@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="http://d3js.org/d3.v3.min.js" language="JavaScript"></script>
+    <script src="liquidFillGauge.js" language="JavaScript"></script>
+    <style>
+        .liquidFillGaugeText { font-family: Helvetica; font-weight: bold; }
+    </style>
+</head>
+<body>
+<svg id="fillgauge" width="97%" height="350"></svg>
+<script>
+    var config = liquidFillGaugeDefaultSettings();
+    config.textVertPosition = 0.55;
+    config.waveAnimateTime = 5000;
+    config.waveHeight = 0.05;
+    config.waveAnimate = true;
+    config.waveRise = true;
+    config.waveOffset = 0.25;
+    config.waveCount = 1;
+    loadLiquidFillGauge("fillgauge", 30, config);
+</script>
+</body>
+</html>

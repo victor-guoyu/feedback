@@ -1,3 +1,19 @@
+// a.acdDurationToday = args.acdDurationToday;
+// a.doNotDisturbDurationToday = args.doNotDisturbDurationToday;
+// a.holdAcdDurationToday = args.holdAcdDurationToday;
+// a.holdNonAcdDurationToday = args.holdNonAcdDurationToday;
+// a.holdOutboundDurationToday = args.holdOutboundDurationToday;
+// a.makeBusyDurationToday = args.makeBusyDurationToday;
+// a.nonAcdDurationToday = args.nonAcdDurationToday;
+// a.outboundDurationToday = args.outboundDurationToday;
+// a.workTimerDurationToday = args.workTimerDurationToday;
+// a.averageAnsweredDurationToday = args.averageAnsweredDurationToday;
+// a.loggedInDurationToday = args.loggedInDurationToday;
+// a.lastLoginTime = args.lastLoginTime;
+// a.lastLogoffTime = args.lastLogoffTime;
+// a.loggedInNotPresentDurationToday = args.loggedInNotPresentDurationToday;
+// a.externalAnswerDurationToday = args.externalAnswerDurationToday;
+
 var data =  [
   {
     label: "Do not Disturb",
@@ -27,8 +43,9 @@ var data =  [
 ];
 
 var userInfo = {
-  userName: "Victor Guo",
-  img: "http://lh6.googleusercontent.com/-6DkVPtsIwLo/AAAAAAAAAAI/AAAAAAAAAAA/zsZnPo3A4aE/s32-c/photo.jpg",
+  name: "Victor Guo",
+  agentType: "Email",
+  img: "http://www.gravatar.com/avatar/d6841cf430543477f68981a3305ed120?d=https%3A%2F%2Flh6.googleusercontent.com%2F-KuHELFH6TKE%2FAAAAAAAAAAI%2FAAAAAAAAC6I%2FmUwyGNZZeY0%2Fphoto.jpg",
   loginTime: "May 12th, 2015",
   logoutTime: "Never"
 };
@@ -38,7 +55,7 @@ var generate = function(){
     data[i].value = Math.random()*100;
   }
   return data;
-}
+};
 
 /**
  * Agent Shift dashboard data virtualization
@@ -102,7 +119,6 @@ var path = g.datum(data).selectAll("path")
 g.append("svg:image")
   .attr("width", 80)
   .attr("height", 80)
-  .style("text-anchor", "middle")
   .attr("xlink:href", userInfo.img)
   .attr("x",-1*80/2)
   .attr("y",-1*140/2);
@@ -110,17 +126,17 @@ g.append("svg:image")
 g.append("text")
   .attr("dy", "2em")
   .style("text-anchor", "middle")
-  .text(function() { return userInfo.userName});
+  .text(function() { return userInfo.agentType+" - "+userInfo.name;});
 
 g.append("text")
   .attr("dy", "4em")
   .style("text-anchor", "middle")
-  .text(function() { return "Login time: "+userInfo.loginTime});
+  .text(function() { return "Login time: "+userInfo.loginTime;});
 
 g.append("text")
   .attr("dy", "6em")
   .style("text-anchor", "middle")
-  .text(function() { return "Logout time: "+userInfo.logoutTime});
+  .text(function() { return "Logout time: "+userInfo.logoutTime;});
 
 var render = function(data){
   // add transition to new path
@@ -142,15 +158,15 @@ var render = function(data){
     .enter().append("path")
     .attr("fill", function(d,i){ return color(i); })
     .attr("d", arc)
-    .each(function(d){ this._current = d; })
+    .each(function(d){ this._current = d; });
 
   // remove data not being used
   g.datum(data).selectAll("path")
     .data(pie).exit().remove();
-  }
+  };
 
   render(data);
   setInterval(function () {
-    render(generate())
+    render(generate());
   },2000);
 });
