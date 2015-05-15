@@ -1,3 +1,9 @@
+// stop the enterprise service
+// go to C:\Program Files (x86)\Mitel\MiContact Center\DataDirectory
+// Delete every directory like Node_01
+// leave NodeTime
+// then start the enterprise server
+
 angular.module('widget.shift').directive('shiftChart', function () {
     return {
         restrict: 'E',
