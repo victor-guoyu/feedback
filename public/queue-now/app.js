@@ -56,38 +56,26 @@ var colors = {
 
     svg = container.append('svg')
         .attr('width',  boxSize)
-        .attr('height', boxSize),
+        .attr('height', boxSize)
+        .attr('viewBox', '0 0 '+boxSize+' '+boxSize),
 
     g = svg.append('g')
         .attr('transform', 'translate(' + boxSize / 2 + ',' + boxSize / 2 + ')'),
 
-    meter = g.append('g')
-        .attr('class', 'progress-meter'),
-
-    foreground = meter.append('path')
-        .attr('class', 'foreground')
-        .attr('fill', color)
-        .attr('fill-opacity', 1)
-        .attr('stroke', color)
-        .attr('stroke-width', 5)
-        .attr('stroke-opacity', 1)
-        .attr('filter', 'url(#blur)'),
-
-    front = meter.append('path')
-        .attr('class', 'foreground')
+    front = g.append('path')
         .attr('fill', color)
         .attr('fill-opacity', 1),
 
-    numberText = meter.append('text')
+    numberText = g.append('text')
         .attr('fill', '#fff')
         .attr('text-anchor', 'middle')
         .attr('dy', '.35em'),
 
-    subText = meter.append('text')
+    subText = g.append('text')
         .attr('fill', '#fff')
         .attr('text-anchor', 'middle')
-        .attr('dy', '-2.1em')
-        .attr('dx', '-2.7em');
+        .attr('dy', '-3.3em')
+        .attr('dx', '-4.1em');
 
     /*******Liquid fill config*******/
     fillPercent     = (Math.max(0, Math.min(100, mainGaugeValue))/100),
@@ -136,7 +124,7 @@ var colors = {
                         };
                     }),
 
-    waveGroup = svg.append('defs')
+    waveGroup = g.append('defs')
         .append('clipPath')
         .attr('id', 'clipWave' + containerId),
 
@@ -145,12 +133,12 @@ var colors = {
         .attr('d', clipArea),
 
     //The inner circle with the clipping wave attached
-    fillCircleGroup = meter.append('g')
+    fillCircleGroup = g.append('g')
         .attr('clip-path', 'url(#clipWave' + containerId + ')'),
 
     fillCircleGroup.append('circle')
-        .attr('cx', mainRadius)
-        .attr('cy', mainRadius)
+        .attr('cx', fillCircleRadius - mainRadius)
+        .attr('cy', fillCircleRadius - mainRadius)
         .attr('r', fillCircleRadius)
         .style('fill', waveColor),
 
@@ -159,30 +147,13 @@ var colors = {
 
 
 /*******Rendering Chart *******/
-waveGroup
-    .attr('transform', 'translate('+waveGroupXPosition+','+waveRiseScale(0)+')')
-    .transition()
-    .duration(waveRiseTime)
-    .attr('transform', 'translate('+waveGroupXPosition+','+waveRiseScale(fillPercent)+')')
-    .each('start', function() {
-        wave.attr('transform', 'translate(1,0)');
-    });
-
-//Add blur filter
-svg.append('defs')
-    .append('filter')
-    .attr('id', 'blur')
-    .append('feGaussianBlur')
-    .attr('in', 'SourceGraphic')
-    .attr('stdDeviation', '7');
-
-meter.append('path')
+g.append('path')
     .attr('class', 'background')
     .attr('fill', '#ccc')
     .attr('fill-opacity', 0.1)
     .attr('d', arc.endAngle(twoPi - offset));
 
-meter.append('circle')
+g.append('circle')
     .attr('cx', -66)
     .attr('cy', -60)
     .attr('r', subRadius)
@@ -192,8 +163,17 @@ meter.append('circle')
 
 subText.text(formatPercent(0.9));
 
+
+waveGroup
+    .attr('transform', 'translate('+waveGroupXPosition+','+waveRiseScale(0)+')')
+    .transition()
+    .duration(waveRiseTime)
+    .attr('transform', 'translate('+waveGroupXPosition+','+waveRiseScale(fillPercent)+')')
+    .each('start', function() {
+        wave.attr('transform', 'translate(1,0)');
+    });
+
 function updateProgress(progress) {
-    foreground.attr('d', arc.endAngle((twoPi - offset) * progress));
     front.attr('d', arc.endAngle((twoPi - offset) * progress));
     numberText.text(formatPercent(progress));
 }
