@@ -70,93 +70,12 @@ gauge.subText = gauge.g.append('text')
 
 gauge.subText.text(formatPercent(subGaugeValue));
 
-/*******Liquid fill config*******/
-gauge.fillPercent      = (Math.max(0, Math.min(100, mainGaugeValue))/100);
-gauge.waveHeightScale  = d3.scale.linear().range([0,0.05,0]).domain([0,50,100]);
-gauge.fillCircleRadius = gauge.mainRadius - gauge.mainBorder;
-gauge.waveColor        = '#178BCA';
-gauge.waveOffset       = 0;
-gauge.waveHeight       = gauge.fillCircleRadius * gauge.waveHeightScale(gauge.fillPercent*100)*30;
-gauge.waveLength       = gauge.fillCircleRadius * 2;
-gauge.waveClipWidth    = gauge.waveLength * 2;
-
-// Scales for controlling the size of the clipping path.
-gauge.waveScaleX = d3.scale.linear()
-    .range([0,gauge.waveClipWidth]).domain([0,1]);
-gauge.waveScaleY = d3.scale.linear()
-    .range([0,gauge.waveHeight]).domain([0,1]);
-gauge.waveRiseScale = d3.scale.linear()
-    .range([gauge.fillCircleRadius - 90, gauge.waveHeight]).domain([0, 1]);
-
-gauge.waveAnimateScale = d3.scale.linear()
-    .range([0, gauge.waveClipWidth-gauge.fillCircleRadius*2])
-    .domain([0,1]);
-
-gauge.waveData =  _.range(80)
-                .map(function (value, key) {
-                    return {
-                        x: key/80,
-                        y: key/40
-                    };
-                });
-
-gauge.waveGroup = gauge.g.append('defs')
-        .append('clipPath')
-        .attr('id', 'clipWave' + containerId);
-
-gauge.wave = gauge.waveGroup.append('path')
-    .datum(gauge.waveData)
-    .attr('d',
-        d3.svg.area()
-        .x(function(d) {
-            return gauge.waveScaleX(d.x);
-        })
-        .y0(function(d) {
-            return gauge.waveScaleY(Math.sin(Math.sin(-1 + d.y*twoPi)));
-        })
-        .y1(function(d) {
-            return (gauge.fillCircleRadius*2 + gauge.waveHeight);
-        })
-    );
-
-//The inner circle with the clipping wave attached
-gauge.fillCircleGroup = gauge.g.append('g')
-        .attr("clip-path", "url(#clipWave" + containerId + ")");
-
-gauge.fillCircleGroup.append('circle')
-    .attr('cx', 0)
-    .attr('cy', 0)
-    .attr('r', gauge.fillCircleRadius)
-    .style('fill', gauge.waveColor);
-
-gauge.waveGroupXPosition = gauge.fillCircleRadius - gauge.waveClipWidth ;
-
-gauge.waveGroup
-.attr('transform', 'translate('+gauge.waveGroupXPosition+','+gauge.waveRiseScale(3)+')')
-.transition()
-.duration(1000)
-.attr('transform', 'translate('+gauge.waveGroupXPosition+','+gauge.waveRiseScale(gauge.fillPercent)+')')
-.each('start', function() {
-    gauge.wave.attr('transform', 'translate(1,0)');
-});
 
 gauge.updateProgress = function(progress) {
     gauge.front.attr('d', gauge.arc.endAngle((twoPi - gauge.offset) * gauge.progress));
     gauge.numberText.text(formatPercent(progress));
 };
 
-gauge.animateWave = function() {
-    gauge.wave.transition()
-        .duration(1000)
-        .ease('linear')
-        .attr('transform', 'translate('+gauge.waveAnimateScale(1)+',0)')
-        .each('end', function(){
-            gauge.wave.attr('transform', 'translate('+gauge.waveAnimateScale(0)+',0)');
-            gauge.animateWave(1000);
-        });
-};
-
-gauge.animateWave();
 (function loops() {
     gauge.updateProgress(gauge.progress);
 
