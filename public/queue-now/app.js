@@ -1,6 +1,8 @@
+
+/*******Global Config*******/
 var twoPi          = Math.PI * 2,
     color          = '#47e495',
-    mainGaugeValue = 0.85,
+    mainGaugeValue = 0.55,
     subGaugeValue  = 0.9,
     containerId    = '#queue',
     formatPercent  = d3.format('.0%'),
@@ -39,9 +41,23 @@ gauge.svg = d3.select(containerId)
 gauge.g = gauge.svg.append('g')
     .attr('transform', 'translate('+gauge.locationX+','+gauge.locationY+')');
 
-gauge.front = gauge.g.append('path')
-    .attr('fill', color)
-    .attr('fill-opacity', 1);
+gauge.fillClip = gauge.g.append('clipPath')
+    .attr('id', 'g-clip')
+    .append('rect')
+        .attr('id', 'g-clip-rect')
+        .attr('y', '-125')
+        .attr('x', '-130')
+        .attr('width', gauge.mainRadius * 2);
+
+gauge.g.append('circle')
+    .attr('r', gauge.mainRadius - gauge.mainBorder)
+    .attr('fill', '#178BCA');
+
+
+gauge.fillCircle = gauge.g.append('circle')
+    .attr('clip-path', 'url(#g-clip)')
+    .attr('r', gauge.mainRadius)
+    .attr('fill', '#4F4F4F');
 
 gauge.g.append('path')
     .attr('class', 'background')
@@ -49,13 +65,18 @@ gauge.g.append('path')
     .attr('fill-opacity', 0.1)
     .attr('d', gauge.arc.endAngle(twoPi - gauge.offset));
 
+gauge.front = gauge.g.append('path')
+    .attr('fill', color)
+    .attr('fill-opacity', 1);
+
 gauge.g.append('circle')
     .attr('cx', -85)
     .attr('cy', -86)
     .attr('r', gauge.subRadius)
     .attr('stroke', '#ccc')
     .attr('stroke-width', 2)
-    .attr('fill-opacity', 0);
+    .attr('fill', '#4F4F4F');
+    // .attr('fill-opacity', 0);
 
 gauge.numberText = gauge.g.append('text')
     .attr('fill', '#fff')
@@ -73,6 +94,7 @@ gauge.subText.text(formatPercent(subGaugeValue));
 
 gauge.updateProgress = function(progress) {
     gauge.front.attr('d', gauge.arc.endAngle((twoPi - gauge.offset) * gauge.progress));
+    d3.select('#g-clip-rect').attr('height', 2*gauge.mainRadius*(1 - progress));
     gauge.numberText.text(formatPercent(progress));
 };
 
