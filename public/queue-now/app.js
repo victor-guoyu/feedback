@@ -1,34 +1,28 @@
 
 /*******Global Config*******/
 var twoPi          = Math.PI * 2,
-    color          = '#47e495',
-    mainGaugeValue = 0.55,
-    subGaugeValue  = 0.9,
-    containerId    = '#queue',
-    formatPercent  = d3.format('.0%'),
-    gauge          = {},
-    count          = Math.abs((mainGaugeValue - 0) / 0.01),
-    width          = 260,
-    height         = 260;
+    color               = '#47e495',
+    currentServiceLevel = 0.2,
+    serviceLevel        = 0.8,
+    containerId         = '#queue',
+    formatPercent       = d3.format('.0%'),
+    gauge               = {},
+    count               = Math.abs((currentServiceLevel - 0) / 0.01),
+    width               = 260,
+    height              = 310;
 
 
 /*******Main gauge params*******/
-gauge.mainRadius = Math.min(width, height)/2;
+gauge.mainRadius = Math.min(width, height)/2 - 10;
 gauge.mainBorder = 5;
 gauge.progress   = 0;
-gauge.offset     = Math.PI / 4 + 0.35;
 gauge.locationX  = width/ 2 ;
 gauge.locationY  = height / 2;
 
 
-/*******Top left gauge params*******/
-gauge.subRadius      = 43;
-gauge.subStrokeColor = '#fff';
-
-
 /*******Gauge Components*******/
 gauge.arc = d3.svg.arc()
-    .startAngle(-0.43)
+    .startAngle(0)
     .innerRadius(gauge.mainRadius - gauge.mainBorder)
     .outerRadius(gauge.mainRadius);
 
@@ -46,7 +40,7 @@ gauge.fillClip = gauge.g.append('clipPath')
     .append('rect')
         .attr('id', 'g-clip-rect')
         .attr('y', '-125')
-        .attr('x', '-130')
+        .attr('x', -gauge.mainRadius)
         .attr('width', gauge.mainRadius * 2);
 
 gauge.g.append('circle')
@@ -63,46 +57,36 @@ gauge.g.append('path')
     .attr('class', 'background')
     .attr('fill', '#ccc')
     .attr('fill-opacity', 0.1)
-    .attr('d', gauge.arc.endAngle(twoPi - gauge.offset));
+    .attr('d', gauge.arc.endAngle(twoPi));
 
 gauge.front = gauge.g.append('path')
     .attr('fill', color)
     .attr('fill-opacity', 1);
 
-gauge.g.append('circle')
-    .attr('cx', -85)
-    .attr('cy', -86)
-    .attr('r', gauge.subRadius)
-    .attr('stroke', '#ccc')
-    .attr('stroke-width', 2)
-    .attr('fill', '#4F4F4F');
-    // .attr('fill-opacity', 0);
-
-gauge.numberText = gauge.g.append('text')
+gauge.serviceLevelText = gauge.g.append('text')
     .attr('fill', '#fff')
     .attr('text-anchor', 'middle')
     .attr('dy', '.35em');
 
-gauge.subText = gauge.g.append('text')
+gauge.serviceGoalText = gauge.g.append('text')
     .attr('fill', '#fff')
     .attr('text-anchor', 'middle')
-    .attr('dy', '-4.8em')
-    .attr('dx', '-5.1em');
+    .attr('dy', '-1.5em');
 
-gauge.subText.text(formatPercent(subGaugeValue));
+gauge.serviceGoalText.text('Service Level Goal: '+formatPercent(serviceLevel));
 
 
 gauge.updateProgress = function(progress) {
-    gauge.front.attr('d', gauge.arc.endAngle((twoPi - gauge.offset) * gauge.progress));
+    gauge.front.attr('d', gauge.arc.endAngle(twoPi * gauge.progress));
     d3.select('#g-clip-rect').attr('height', 2*gauge.mainRadius*(1 - progress));
-    gauge.numberText.text(formatPercent(progress));
+    gauge.serviceLevelText.text('Current Service Level: '+formatPercent(progress));
 };
 
 (function loops() {
     gauge.updateProgress(gauge.progress);
 
     if (count > 0) {
-        var step = mainGaugeValue < gauge.startPercent ? -0.01 : 0.01;
+        var step = gauge.currentServiceLevel < gauge.startPercent ? -0.01 : 0.01;
         count--;
         gauge.progress += step;
         setTimeout(loops, 10);

@@ -1,0 +1,69 @@
+
+<div class="alert alert-info" ng-show="configNotice">
+    {{configNotice}}
+</div>
+
+<div class="alert alert-warning" ng-show="!queueState.name && !configNotice">
+    Error loading queue. Configuration: {{config}}
+</div>
+
+<div class="widget-queue" ng-hide="configNotice || !queueState.name">
+    <h3>
+        <a ui-sref="realtime.queues.conversations({qid: queueState.id, isGroup: false})"
+           title="View conversations for this queue">
+            {{queueState.name}}
+        </a>
+
+        <small>{{queueState.reporting}}</small>
+        <span class="pull-right details-toggle"
+              ng-mouseenter="conversationsPopover = true;" ng-mouseleave="conversationsPopover = false;">
+            {{queueState.abandonedConversationsToday + queueState.answeredConversationsToday + queueState.interflowedConversationsToday}}
+            offered
+            <i class="fa fa-info-circle"></i>
+        </span>
+    </h3>
+    <!-- Conversations -->
+    <div class="details-popover" ng-show="conversationsPopover">
+        <div><span style="font-weight: 800;">{{queueState.abandonedConversationsToday}}</span> Abandoned</div>
+        <div><span style="font-weight: 800;">{{queueState.answeredConversationsToday}}</span> Answered</div>
+        <div><span style="font-weight: 800;">{{queueState.interflowedConversationsToday}}</span> Interflowed</div>
+    </div>
+    <div class="row stat-value">
+        <div class="col-xs-3">
+            {{queueState.serviceLevelPercentageToday}}<span class="unit">%</span>
+        </div>
+        <div class="col-xs-3">
+            {{queueState.waitingConversations}}
+        </div>
+        <div class="col-xs-3">
+            {{hhmmssToMinutes(queueState.estimatedWaitTimeForNewConversations)}}
+            <span class="unit">min</span>
+        </div>
+        <div class="col-xs-3">
+            {{hhmmssToMinutes(queueState.longestWaitingConversationDuration)}}
+            <span class="unit">min</span>
+        </div>
+    </div>
+    <div class="row stat-name light">
+        <div class="col-xs-3">
+            Service Level
+        </div>
+        <div class="col-xs-3">
+            Contacts Waiting
+        </div>
+        <div class="col-xs-3">
+            Wait Time
+        </div>
+        <div class="col-xs-3">
+            Longest Waiting
+        </div>
+    </div>
+
+    <!-- Agents -->
+    <div class="row agent-states">
+        <div class="col-xs-3" style="border-color: #8ec896">{{queueState.agentsIdle}} Idle</div>
+        <div class="col-xs-3" style="border-color: #739fed">{{queueState.agentsOnAcdConversations}} ACD</div>
+        <div class="col-xs-3" style="border-color: #b0b0b0">{{queueState.agentsOnNonAcdConversations}} Non-ACD</div>
+        <div class="col-xs-3" style="border-color: #e27672">{{queueState.agentsUnavailable}} Unavailable</div>
+    </div>
+</div>
