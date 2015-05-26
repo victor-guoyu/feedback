@@ -1,18 +1,9 @@
-
 /*******Global Config*******/
 var twoPi = Math.PI * 2,
     color                    = '#47e495',
-    currentServiceLevel      = 0.15,
-    abandonedPrecentage      = 0.23,
-    serviceLevelGoal         = 0.8,
-    numberOfWaiting          = 20,
-    averageWaitTime          = 10,
-    longestWaiting           = 60,
     containerId              = '#queue',
     formatPercent            = d3.format('.0%'),
     gauge                    = {},
-    serviceLevelCount        = Math.abs((currentServiceLevel - 0) / 0.01),
-    abandonedPrecentageCount = Math.abs(abandonedPrecentage/0.01),
     width                    = 220,
     height                   = 220;
 
@@ -40,13 +31,6 @@ gauge.svg = d3.select(containerId)
     .attr('height', height)
     .attr('viewBox', '0 0 '+width+' '+height);
 
-gauge.filter = gauge.svg.append('defs')
-    .append('filter')
-    .attr('id', 'blur')
-    .append('feGaussianBlur')
-    .attr('in', 'SourceGraphic')
-    .attr('stdDeviation', '3');
-
 gauge.g = gauge.svg.append('g')
     .attr('transform', 'translate('+gauge.locationX+','+gauge.locationY+')');
 
@@ -62,21 +46,6 @@ gauge.dropPrecentage = gauge.g.append('circle')
     .attr('r', gauge.mainRadius - gauge.mainBorder)
     .attr('fill', '#FFB8B8');
 
-gauge.dropPrecentage.on('mousemove', function() {
-        gauge.dropPrecentage.attr('fill', '#FB7374');
-        window.x = d3.event.pageX;
-        window.y = d3.event.pageY;
-        gauge.tooltip.style("left", d3.event.pageX+10+"px");
-        gauge.tooltip.style("top", d3.event.pageY-25+"px");
-        gauge.tooltip.style("display", "inline-block");
-        gauge.tooltip.select("span").text(formatPercent(abandonedPrecentage)+' abandoned');
-    })
-    .on('mouseout', function() {
-        gauge.dropPrecentage.attr('fill', '#FFB8B8');
-        gauge.tooltip.style("display","none");
-    });
-
-
 gauge.fillCircle = gauge.g.append('circle')
     .attr('clip-path', 'url(#g-clip)')
     .attr('r', gauge.mainRadius)
@@ -91,66 +60,6 @@ gauge.g.append('path')
 gauge.front = gauge.g.append('path')
     .attr('fill', color)
     .attr('fill-opacity', 1);
-
-gauge.numberOfWaiting = gauge.g.append('text')
-    .attr('text-anchor', 'middle')
-    .attr('dy', '0em')
-    .attr('font-size', '76px')
-    .attr('font-family','sans-serif')
-    .attr('fill','#676161')
-    .attr('class', 'hover-text')
-    .text(numberOfWaiting)
-    .on("mousemove", function() {
-          window.x = d3.event.pageX;
-          window.y = d3.event.pageY;
-          gauge.tooltip.style("left", d3.event.pageX+10+"px");
-          gauge.tooltip.style("top", d3.event.pageY-25+"px");
-          gauge.tooltip.style("display", "inline-block");
-          gauge.tooltip.select("span").text('Number of Waiting: '+ numberOfWaiting);
-        })
-        .on("mouseout", function() {
-          gauge.tooltip.style("display","none");
-        });
-
-gauge.averageWaitTime = gauge.g.append('text')
-    .attr('text-anchor', 'middle')
-    .attr('dx', '-1.3em')
-    .attr('dy', '1.8em')
-    .attr('font-size','30px')
-    .attr('font-family', 'sans-serif')
-    .text(averageWaitTime)
-        .attr('class', 'hover-text')
-        .on("mousemove", function() {
-          window.x = d3.event.pageX;
-          window.y = d3.event.pageY;
-          gauge.tooltip.style("left", d3.event.pageX+10+"px");
-          gauge.tooltip.style("top", d3.event.pageY-25+"px");
-          gauge.tooltip.style("display", "inline-block");
-          gauge.tooltip.select("span").text('Average Waiting Time: '+ averageWaitTime+' min');
-        })
-        .on("mouseout", function() {
-          gauge.tooltip.style("display","none");
-        });
-
-gauge.longestWaiting = gauge.g.append('text')
-    .attr('text-anchor', 'middle')
-    .attr('dx', '1em')
-    .attr('dy', '1.8em')
-    .attr('font-size','30px')
-    .attr('font-family', 'sans-serif')
-    .text(longestWaiting)
-        .attr('class', 'hover-text')
-        .on('mousemove', function() {
-          window.x = d3.event.pageX;
-          window.y = d3.event.pageY;
-          gauge.tooltip.style("left", d3.event.pageX+10+"px");
-          gauge.tooltip.style("top", d3.event.pageY-25+"px");
-          gauge.tooltip.style("display", "inline-block");
-          gauge.tooltip.select("span").text('Longest Waiting Time: '+longestWaiting+' min');
-        })
-        .on("mouseout", function() {
-          gauge.tooltip.style("display","none");
-        });
 
 gauge.g.append('text')
     .attr('text-anchor', 'middle')
@@ -168,55 +77,135 @@ gauge.g.append('text')
     .attr('font-family', 'sans-serif')
     .text('min');
 
-gauge.updateServiceLevelProgress = function(progress) {
+gauge.updateServiceLevel = function(level) {
     gauge.front
-    .attr('d', gauge.arc.endAngle(twoPi * progress))
+    .attr('d', gauge.arc.endAngle(twoPi * level))
     .on("mousemove", function() {
-      window.x = d3.event.pageX;
-      window.y = d3.event.pageY;
       gauge.tooltip.style("left", d3.event.pageX+15+"px");
       gauge.tooltip.style("top", d3.event.pageY+"px");
       gauge.tooltip.style("display", "inline-block");
-      gauge.tooltip.select("span").text('Current Service Level: '+formatPercent(progress));
+      gauge.tooltip.select("span")
+      .text('Current Service Level: '+formatPercent(level));
     })
     .on("mouseout", function() {
       gauge.tooltip.style("display","none");
     });
 };
 
-gauge.updateAbadonedPercentage = function(progress) {
-    d3.select('#g-clip-rect').attr('height', 2*gauge.mainRadius*(1 - progress));
+gauge.updateAbadonedPercentage = function(percentage) {
+    d3.select('#g-clip-rect').attr('height', 2*gauge.mainRadius*(1 - percentage));
+    gauge.dropPrecentage.on('mousemove', function() {
+        gauge.dropPrecentage.attr('fill', '#FB7374');
+        gauge.tooltip.style("left", d3.event.pageX+10+"px");
+        gauge.tooltip.style("top", d3.event.pageY-25+"px");
+        gauge.tooltip.style("display", "inline-block");
+        gauge.tooltip.select("span")
+        .text(formatPercent(percentage)+' abandoned');
+    })
+    .on('mouseout', function() {
+        gauge.dropPrecentage.attr('fill', '#FFB8B8');
+        gauge.tooltip.style("display","none");
+    });
 };
 
-// gauge.updateServiceLevel = function(progress) {
-//     gauge.renderServiceLevelProgress(gauge.serviceLevelProgress);
+gauge.updateNumberOfWaiting = function(number) {
+    d3.select('#number-waiting').remove();
+    gauge.g.append('text')
+    .attr('id', 'number-waiting')
+    .attr('text-anchor', 'middle')
+    .attr('dy', '0em')
+    .attr('font-size', '76px')
+    .attr('font-family','sans-serif')
+    .attr('fill','#676161')
+    .attr('class', 'hover-text')
+    .text(number)
+    .on("mousemove", function() {
+          gauge.tooltip.style("left", d3.event.pageX+10+"px");
+          gauge.tooltip.style("top", d3.event.pageY-25+"px");
+          gauge.tooltip.style("display", "inline-block");
+          gauge.tooltip.select("span")
+          .text('Number of Waiting: '+ number);
+        })
+        .on("mouseout", function() {
+          gauge.tooltip.style("display","none");
+        });
+};
 
-//     if (serviceLevelCount > 0) {
-//         var step = 0.01;
-//         serviceLevelCount--;
-//         gauge.serviceLevelProgress += step;
-//         setTimeout(gauge.updateServiceLevel, 10);
-//     }
-// };
+gauge.updateAverageWaitingTime = function(time) {
+    d3.select('#average-wait').remove();
+    gauge.g.append('text')
+    .attr('id', 'average-wait')
+    .attr('text-anchor', 'middle')
+    .attr('dx', '-1.3em')
+    .attr('dy', '1.8em')
+    .attr('font-size','30px')
+    .attr('font-family', 'sans-serif')
+    .text(time)
+        .attr('class', 'hover-text')
+        .on("mousemove", function() {
+          gauge.tooltip.style("left", d3.event.pageX+10+"px");
+          gauge.tooltip.style("top", d3.event.pageY-25+"px");
+          gauge.tooltip.style("display", "inline-block");
+          gauge.tooltip.select("span")
+          .text('Average Waiting Time: '+ time +' min');
+        })
+        .on("mouseout", function() {
+          gauge.tooltip.style("display","none");
+        });
+};
 
-// gauge.updateAbandonedPrecentage = function(percentage) {
-//     gauge.renderAbadonedPercentage(gauge.abadonedPercentageProgress);
+gauge.updateLongestWaitingTime = function(time) {
+    d3.select('#longest-waiting').remove();
+    gauge.g.append('text')
+    .attr('id', 'longest-waiting')
+    .attr('text-anchor', 'middle')
+    .attr('dx', '1em')
+    .attr('dy', '1.8em')
+    .attr('font-size','30px')
+    .attr('font-family', 'sans-serif')
+    .text(time)
+        .attr('class', 'hover-text')
+        .on('mousemove', function() {
+          gauge.tooltip.style("left", d3.event.pageX+10+"px");
+          gauge.tooltip.style("top", d3.event.pageY-25+"px");
+          gauge.tooltip.style("display", "inline-block");
+          gauge.tooltip.select("span")
+          .text('Longest Waiting Time: '+ time +' min');
+        })
+        .on("mouseout", function() {
+          gauge.tooltip.style("display","none");
+        });
+};
 
-//     if (abandonedPrecentageCount > 0) {
-//         var step =  0.01;
-//         abandonedPrecentageCount--;
-//         gauge.abadonedPercentageProgress += step;
-//         setTimeout(gauge.updateAbandonedPrecentage, 15);
-//     }
-// };
+/*************Testing*************/
 
-
-// Randomly generate fake data
+// Randomly generate fake data template
 var data = {
     serviceLevel: 0.15,
+    serviceLevelGoal: 0.8,
     numberOfWaiting: 20,
     abandonedPrecentage: 0.23,
     averageWaitTime: 10,
     longestWaiting: 60
 };
 
+var generate = function () {
+    data.serviceLevel        = (Math.random()*0.65 + 0.15).toFixed(2);
+    data.numberOfWaiting     = Math.floor(Math.random()*25 + 5);
+    data.abandonedPrecentage = (Math.random()*0.2 + 0.2).toFixed(2);
+    data.averageWaitTime     = Math.floor(Math.random()*20 +10);
+    data.longestWaiting      = Math.floor(Math.random()*50 + 10);
+    return data;
+};
+
+function run () {
+    data = generate();
+    gauge.updateServiceLevel(data.serviceLevel);
+    gauge.updateAbadonedPercentage(data.abandonedPrecentage);
+    gauge.updateNumberOfWaiting(data.numberOfWaiting);
+    gauge.updateAverageWaitingTime(data.averageWaitTime);
+    gauge.updateLongestWaitingTime(data.longestWaiting)
+}
+run();
+
+setInterval(run, 2000);
