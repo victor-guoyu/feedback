@@ -11,10 +11,37 @@
       font-size: 24px;
       font-weight: bold;
     }
+
+    .tooltip{
+      position: absolute;
+      display: none;
+      width: auto;
+      height: auto;
+      background: none repeat scroll 0 0 white;
+      border: 0 none;
+      border-radius: 8px 8px 8px 8px;
+      box-shadow: -3px 3px 15px #888888;
+      color: black;
+      font: 12px sans-serif;
+      padding: 5px;
+      text-align: center;
+    }
+
+    path:hover, .hover-text:hover{
+      cursor: pointer;
+    }
+
+    text {
+      text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.4);
+      fill: #444;
+    }
+
   </style>
 </head>
 <body>
-  <div id="queue" width="97%" height="350" style="background-color: #4F4F4F"></div>
+  <div id="queue" width="97%" height="350">
+    <div class="tooltip"><span></span></div>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>
